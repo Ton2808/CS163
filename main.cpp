@@ -1,5 +1,5 @@
 #include <iostream>
-#include"Tan.h"
+#include "Tan.h"
 
 using namespace std;
 
