@@ -1,4 +1,3 @@
-#include"Tan.h"
-#include<bits/stdc++.h>
+#include "Tan.h"
+#include "library.h"
 using namespace std;
-
