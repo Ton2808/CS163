@@ -140,6 +140,14 @@ bool checkOROperator(string inputString)
     return false;
 }
 
+bool checkPlusOpertor(string inputString)
+{
+    regex operator_Plus("[a-z]*[A-Z]*[0-9]*(\\S*)(\\+)(\\S*)[a-z]*[A-Z]*[0-9]*");
+    if (regex_match(inputString, operator_Plus))
+        return true;
+    return false;
+}
+
 vector<int> checkOption(string inputString)
 {
     vector<int> arrSolutions;

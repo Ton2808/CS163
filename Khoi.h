@@ -23,6 +23,7 @@ void getStringsStopWord(string fileStopWord, string *&stopWord, ifstream &fin);
 bool isStopWord(string stopWord[], string word, int number);
 bool checkANDOperator(string inputString);
 bool checkOROperator(string inputString);
+bool checkPlusOpertor(string inputString);
 vector<int> checkOption(string inputString);
 void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWord[]);
 #endif
