@@ -1,6 +1,7 @@
 #ifndef Khoi_h
 #define Khoi_h
 #include "library.h"
+using namespace std;
 struct TrieNode
 {
     TrieNode **children;
