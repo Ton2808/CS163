@@ -35,6 +35,7 @@ void insertWordToTrie(TrieNode *&root, string a, string link)
     else
         cur->links.push_back(make_pair(link, 1));
 }
+
 bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getLinks)
 {
     int i = 0, index;
