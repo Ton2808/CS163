@@ -32,4 +32,5 @@
 #include <utility>
 #include <valarray>
 #include <vector>
+#include <regex>
 #endif

@@ -15,4 +15,14 @@ struct TrieNode
         isEndNode = false;
     }
 };
+
+void insertWordToTrie(TrieNode *&root, string a, string link);
+bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getLinks);
+void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numberFiles);
+void getStringsStopWord(string fileStopWord, string *&stopWord, ifstream &fin);
+bool isStopWord(string stopWord[], string word, int number);
+bool checkANDOperator(string inputString);
+bool checkOROperator(string inputString);
+vector<int> checkOption(string inputString);
+void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWord[]);
 #endif
