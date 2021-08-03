@@ -35,7 +35,6 @@ void insertWordToTrie(TrieNode *&root, string a, string link)
     else
         cur->links.push_back(make_pair(link, 1));
 }
-
 bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getLinks)
 {
     int i = 0, index;
@@ -107,17 +106,31 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
     fin.open(fileName);
     if (fin.is_open())
     {
-        cout << "can open file" << '\n';
         string tmp;
         while (!fin.eof())
         {
+            fin.ignore();
             getline(fin, tmp);
             string word;
-            stringstream in(tmp);
+            regex checkLine("\\s*");
+            if (regex_match(tmp, checkLine))
+                break;
+            istringstream in(tmp);
             while (getline(in, word, ' '))
             {
-                //if (!isStopWord(stopWords, word, 173))
-                insertWordToTrie(root, word, fileName);
+                regex checkWord("[A-Z]*[a-z]*[0-9]*");
+                if (!regex_match(word, checkWord))
+                {
+                    break;
+                }
+
+                if (!isStopWord(stopWords, word, 202))
+                {
+                    insertWordToTrie(root, word, fileName);
+                    cout << word << '\n';
+                    cout << fileName << '\n';
+                    cout << '\n';
+                }
             }
         }
     }
@@ -148,22 +161,80 @@ bool checkPlusOpertor(string inputString)
     return false;
 }
 
-vector<int> checkOption(string inputString)
+vector<string> splitPlusOperator(TrieNode *root, string inputString)
 {
-    vector<int> arrSolutions;
+    vector<string> res;
+    string temp;
+    for (int i = 0; i < inputString.length(); ++i)
+    {
+        if (inputString[i] == ' ')
+            continue;
+        if (inputString[i] == '+')
+        {
+            res.push_back(temp);
+            temp.clear();
+        }
+        else
+        {
+            temp += inputString[i];
+            if (i == inputString.length() - 1)
+            {
+                res.push_back(temp);
+            }
+        }
+    }
+    return res;
+}
+
+void checkOption(TrieNode *root, string inputString, int numberOfFiles)
+{
     //1: And
     //2: Or
     //3: Minus
     //4: Intile:
-    //5: Plus
+    //5: Plus (Khoi)
     //6: filetype: txt
     //7: $ price
     //8: #hashtag
-    //9: exactly search
-    //10: searching with wildcards *
+    //9: exactly search (Khoi)
+    //10: searching with wildcards * (Khoi)
     //11: search in range $40..$50
     //12: enter ~to search synonym
     if (checkANDOperator(inputString))
-        arrSolutions.push_back(1);
-    return arrSolutions;
+    {
+    }
+
+    if (checkOROperator(inputString))
+    {
+    }
+
+    if (checkPlusOpertor(inputString))
+    {
+        activatePlusOperator(root, inputString, numberOfFiles);
+    }
+}
+
+void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles)
+{
+    vector<string> listWords = splitPlusOperator(root, inputString);
+    vector<string> _5thLinks;
+    ranking(root, listWords, _5thLinks, numberOfFiles);
+    //print(listWords, _5thLinks);
+}
+
+void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles)
+{
+    vector<pair<string, int> > tmp;
+    for (int i = 0; i < word.size(); ++i)
+    {
+        searchInTrieNode(root, word[i], tmp);
+    }
+    for (int i = 0; i < tmp.size(); ++i)
+    {
+        cout << tmp[i].first << " " << tmp[i].second << '\n';
+    }
+}
+
+void print(vector<string> keyWords, vector<string> _5thFiles)
+{
 }

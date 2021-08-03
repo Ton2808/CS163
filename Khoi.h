@@ -16,14 +16,31 @@ struct TrieNode
     }
 };
 
+//setup data
+void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numberFiles);
 void insertWordToTrie(TrieNode *&root, string a, string link);
 bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getLinks);
-void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numberFiles);
-void getStringsStopWord(string fileStopWord, string *&stopWord, ifstream &fin);
+void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWord[]);
+
+//stop word
 bool isStopWord(string stopWord[], string word, int number);
+void getStringsStopWord(string fileStopWord, string *&stopWord, ifstream &fin);
+
+//check opertor
 bool checkANDOperator(string inputString);
 bool checkOROperator(string inputString);
 bool checkPlusOpertor(string inputString);
-vector<int> checkOption(string inputString);
-void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWord[]);
+
+//operator plus
+vector<string> splitPlusOperator(TrieNode *root, string inputString);
+void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles);
+
+//ranking
+void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles);
+
+//print
+void print(vector<string> keyWords, vector<string> _5thFiles);
+
+//search
+void checkOption(TrieNode *root, string inputString, int numberOfFiles);
 #endif
