@@ -54,6 +54,7 @@ bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getL
     return true;
 }
 
+//get file names of all data
 void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numberFiles)
 {
     fin.open(dataFileName);
@@ -101,6 +102,7 @@ bool isStopWord(string stopWords[], string word, int number)
     return false;
 }
 
+//haven't finished
 void reConstructInput(string &word)
 {
     regex checkCapital("[A-Z]");
@@ -119,7 +121,10 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             fin.ignore();
             getline(fin, tmp);
             string word;
+
+            //skip the empty space
             regex checkLine("\\s*");
+
             if (regex_match(tmp, checkLine))
                 break;
             istringstream in(tmp);
@@ -265,6 +270,8 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
             //cout << i->first << fwd[i->first] << '\n';
         }
     }
+
+    //tf-idf 
     int fwD = store.size();
     //cout << fwD;
     if (fwD)
