@@ -101,6 +101,13 @@ bool isStopWord(string stopWords[], string word, int number)
     return false;
 }
 
+void reConstructInput(string &word)
+{
+    regex checkCapital("[A-Z]");
+    if (regex_match(word.substr(0, 1), checkCapital))
+        word[0] += 32;
+}
+
 void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWords[])
 {
     fin.open(fileName);
@@ -120,11 +127,8 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             {
                 regex checkWord("[A-Z]*[a-z]*[0-9]*");
                 if (!regex_match(word, checkWord))
-                {
                     break;
-                }
-
-                if (!isStopWord(stopWords, word, 202))
+                reConstructInput(word);
                 {
                     insertWordToTrie(root, word, fileName);
                     cout << word << '\n';
@@ -155,7 +159,7 @@ bool checkOROperator(string inputString)
 
 bool checkPlusOpertor(string inputString)
 {
-    regex operator_Plus("[a-z]*[A-Z]*[0-9]*(\\S*)(\\+)(\\S*)[a-z]*[A-Z]*[0-9]*");
+    regex operator_Plus("[a-z]*[A-Z]*[0-9]*(\\s*)(\\+)(\\s*)[a-z]*[A-Z]*[0-9]*");
     if (regex_match(inputString, operator_Plus))
         return true;
     return false;
@@ -219,22 +223,110 @@ void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles)
     vector<string> listWords = splitPlusOperator(root, inputString);
     vector<string> _5thLinks;
     ranking(root, listWords, _5thLinks, numberOfFiles);
-    //print(listWords, _5thLinks);
+    print(listWords, _5thLinks);
 }
 
 void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles)
 {
-    vector<pair<string, int> > tmp;
+    vector<pair<string, int> > *tmp;
+    tmp = new vector<pair<string, int> >[word.size()];
     for (int i = 0; i < word.size(); ++i)
     {
-        searchInTrieNode(root, word[i], tmp);
+        searchInTrieNode(root, word[i], tmp[i]);
     }
-    for (int i = 0; i < tmp.size(); ++i)
+    // for (int i = 0; i < word.size(); ++i)
+    // {
+    //     cout << word[i] << '\n';
+    //     for (int j = 0; j < tmp[i].size(); ++j)
+    //     {
+    //         cout << tmp[i][j].first << " " << tmp[i][j].second << '\n';
+    //     }
+    //     cout << '\n';
+    // }
+    map<string, int> checkAllWordIsInFile;
+    map<string, int> fwd;
+    for (int i = 0; i < word.size(); ++i)
     {
-        cout << tmp[i].first << " " << tmp[i].second << '\n';
+        for (int j = 0; j < tmp[i].size(); ++j)
+        {
+            if (fwd[tmp[i][j].first] < tmp[i][j].second)
+            {
+                fwd[tmp[i][j].first] = tmp[i][j].second;
+            }
+            checkAllWordIsInFile[tmp[i][j].first]++;
+        }
+    }
+    vector<string> store;
+    for (map<string, int>::iterator i = checkAllWordIsInFile.begin(); i != checkAllWordIsInFile.end(); ++i)
+    {
+        if (i->second == word.size())
+        {
+            store.push_back(i->first);
+            //cout << i->first << fwd[i->first] << '\n';
+        }
+    }
+    int fwD = store.size();
+    //cout << fwD;
+    if (fwD)
+    {
+        map<string, float> w;
+        for (int i = 0; i < store.size(); ++i)
+        {
+            w[store[i]] = fwd[store[i]] * log((float)numberOfFiles / fwD);
+            //cout << store[i] << " " << w[store[i]] << '\n';
+        }
+        bool *isLooped = new bool[store.size()];
+        for (int i = 0; i < store.size(); ++i)
+            isLooped[i] = false;
+        for (int i = 0; i < 5; ++i)
+        {
+            int max = -1;
+            int index = -1;
+            for (int j = 0; j < store.size(); ++j)
+            {
+                if (!isLooped[j])
+                {
+                    if (w[store[j]] > max)
+                    {
+                        index = j;
+                        max = w[store[j]];
+                    }
+                }
+            }
+            if (index != -1)
+            {
+                isLooped[index] = true;
+                _5thLinks.push_back(store[index]);
+            }
+        }
     }
 }
 
 void print(vector<string> keyWords, vector<string> _5thFiles)
 {
+    ifstream fin;
+    for (int i = 0; i < _5thFiles.size(); ++i)
+    {
+        cout << _5thFiles[i] << '\n';
+        printOneFile(_5thFiles[i], fin, keyWords);
+    }
+}
+
+void printOneFile(string fileName, ifstream &fin, vector<string> keyWords)
+{
+    fin.open(fileName);
+    if (fin.is_open())
+    {
+        string a;
+        cout << "------------------------------------------------------------------------------------------" << '\n';
+        while (!fin.eof())
+        {
+            getline(fin, a);
+            cout << a << '\n';
+        }
+        cout << '\n';
+        cout << "------------------------------------------------------------------------------------------" << '\n';
+        cout << '\n';
+    }
+    fin.close();
 }

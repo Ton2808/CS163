@@ -2,6 +2,7 @@
 #define Khoi_h
 #include "library.h"
 using namespace std;
+using namespace std;
 struct TrieNode
 {
     TrieNode **children;
@@ -21,6 +22,7 @@ void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numbe
 void insertWordToTrie(TrieNode *&root, string a, string link);
 bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getLinks);
 void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWord[]);
+void reConstructInput(string &word);
 
 //stop word
 bool isStopWord(string stopWord[], string word, int number);
@@ -40,6 +42,7 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
 
 //print
 void print(vector<string> keyWords, vector<string> _5thFiles);
+void printOneFile(string fileName, ifstream &fin, vector<string> keyWords);
 
 //search
 void checkOption(TrieNode *root, string inputString, int numberOfFiles);
