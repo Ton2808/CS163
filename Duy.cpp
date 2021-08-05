@@ -13,3 +13,28 @@ bool checkOROperator(string inputString)
     return false;
 }
 
+vector<string> splitOROperator(TrieNode *root, string inputString)
+{
+    vector<string> res;
+    string temp;
+    for (int i = 0; i < inputString.length(); ++i)
+    {
+        if (inputString[i] == ' ')
+            continue;
+        if (inputString[i] == 'OR')
+        {
+            res.push_back(temp);
+            temp.clear();
+        }
+        else
+        {
+            temp += inputString[i];
+            if (i == inputString.length() - 1)
+            {
+                res.push_back(temp);
+            }
+        }
+    }
+    return res;
+}
+
