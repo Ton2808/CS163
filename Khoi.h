@@ -31,10 +31,14 @@ void getStringsStopWord(string fileStopWord, string *&stopWord, ifstream &fin);
 bool checkANDOperator(string inputString);
 bool checkOROperator(string inputString);
 bool checkPlusOpertor(string inputString);
+bool checkExactlyOperator(string inputString);
 
 //operator plus
 vector<string> splitPlusOperator(TrieNode *root, string inputString);
 void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles);
+
+//operator exacly
+void acitvateExactlyOperator(TrieNode *root, string inputString, int numberOFiles);
 
 //ranking
 void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles);
@@ -42,6 +46,7 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
 //print
 void print(vector<string> keyWords, vector<string> _5thFiles);
 void printOneFile(string fileName, ifstream &fin, vector<string> keyWords);
+bool isHighLight(string word, vector<string> keyWord);
 
 //search
 void checkOption(TrieNode *root, string inputString, int numberOfFiles);
