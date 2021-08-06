@@ -1,6 +1,8 @@
 #include "Khoi.h"
 #include "library.h"
 using namespace std;
+//------------------------------------------------------------------------------------------
+//Set Up
 void insertWordToTrie(TrieNode *&root, string a, string link)
 {
     TrieNode *cur = root;
@@ -147,7 +149,10 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
     }
     fin.close();
 }
+//------------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------------
+//Check Operator
 bool checkANDOperator(string inputString)
 {
     regex operator_AND("[a-z]*[A-Z]*[0-9]*(\\s+)AND(\\s+)([a-z]*[A-Z]*[0-9]*)+");
@@ -176,9 +181,16 @@ bool checkExactlyOperator(string inputString)
 {
     regex exactlyOperator("\"(.*)\"");
     if (regex_match(inputString, exactlyOperator))
-    {
+
         return true;
-    }
+    return false;
+}
+
+bool checkWildCardOperator(string inputString)
+{
+    regex wildCardOperator("\"(.*)(\\*)(.*)\"");
+    if (regex_match(inputString, wildCardOperator))
+        return true;
     return false;
 }
 
@@ -211,9 +223,151 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
 
     if (checkExactlyOperator(inputString))
     {
-        acitvateExactlyOperator(root, inputString, numberOfFiles);
+        if (checkWildCardOperator(inputString))
+            acitvateWildCardOperator(root, inputString, numberOfFiles);
+        else
+            acitvateExactlyOperator(root, inputString, numberOfFiles);
     }
 }
+//------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------
+//Wild Card * Operator
+vector<string> splitWordInSpaceWildCard(string inputString, vector<int> &posAfter)
+{
+    vector<string> res;
+    stringstream ss(inputString);
+    string tmp;
+    int index = 0;
+    while (ss >> tmp)
+    {
+        if (tmp == "*")
+        {
+            posAfter.push_back(index);
+            continue;
+        }
+        index++;
+        res.push_back(tmp);
+    }
+    return res;
+}
+
+void acitvateWildCardOperator(TrieNode *root, string inputString, int numberOfFiles)
+{
+    inputString = inputString.substr(1, inputString.size() - 1);
+    inputString = inputString.substr(0, inputString.size() - 1);
+    vector<int> posOfStars;
+    vector<string> keyWords = splitWordInSpaceWildCard(inputString, posOfStars);
+    vector<string> _5thLinks;
+    ranking_WildCardOperator(root, keyWords, _5thLinks, numberOfFiles, posOfStars);
+    print(keyWords, _5thLinks);
+}
+
+void ranking_WildCardOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles, vector<int> starsPos)
+{
+    vector<pair<string, int> > *tmp;
+    tmp = new vector<pair<string, int> >[word.size()];
+    for (int i = 0; i < word.size(); ++i)
+    {
+        searchInTrieNode(root, word[i], tmp[i]);
+    }
+
+    map<string, int> checkAllWordIsInFile;
+    map<string, int> fwd;
+    for (int i = 0; i < word.size(); ++i)
+    {
+        for (int j = 0; j < tmp[i].size(); ++j)
+        {
+            if (fwd[tmp[i][j].first] < tmp[i][j].second)
+            {
+                fwd[tmp[i][j].first] = tmp[i][j].second;
+            }
+            checkAllWordIsInFile[tmp[i][j].first]++;
+        }
+    }
+    vector<string> store;
+    for (map<string, int>::iterator i = checkAllWordIsInFile.begin(); i != checkAllWordIsInFile.end(); ++i)
+    {
+        if (i->second == word.size())
+        {
+            store.push_back(i->first);
+        }
+    }
+
+    ifstream fin;
+    vector<string> exactlyStore;
+    for (int i = 0; i < store.size(); ++i)
+    {
+        fin.open(store[i]);
+        if (fin.is_open())
+        {
+            string a = "(.*)";
+            int index = 0;
+            int j = 0;
+            for (int i = 0; i < word.size(); ++i)
+            {
+                if (j < starsPos.size() && index == starsPos[j])
+                {
+                    i++;
+                    a += "(.*)";
+                }
+                if (i != word.size() - 1)
+                    a = a + word[i] + "(\\s+)";
+                else
+                    a += word[i];
+                index++;
+            }
+            a += "(.*)";
+            cout << a << '\n';
+            regex matchString(a);
+            while (!fin.eof())
+            {
+                string tmp;
+                getline(fin, tmp);
+                if (regex_match(tmp.substr(0, tmp.size() - 1), matchString))
+                {
+                    exactlyStore.push_back(store[i]);
+                    break;
+                }
+            }
+        }
+        fin.close();
+    }
+    int fwD = exactlyStore.size();
+    if (fwD)
+    {
+        map<string, float> w;
+        for (int i = 0; i < exactlyStore.size(); ++i)
+        {
+            w[exactlyStore[i]] = fwd[exactlyStore[i]] * log((float)numberOfFiles / fwD);
+        }
+        bool *isLooped = new bool[exactlyStore.size()];
+        for (int i = 0; i < exactlyStore.size(); ++i)
+            isLooped[i] = false;
+        for (int i = 0; i < 5; ++i)
+        {
+            int max = -1;
+            int index = -1;
+            for (int j = 0; j < exactlyStore.size(); ++j)
+            {
+                if (!isLooped[j])
+                {
+                    if (w[exactlyStore[j]] > max)
+                    {
+                        index = j;
+                        max = w[exactlyStore[j]];
+                    }
+                }
+            }
+            if (index != -1)
+            {
+                isLooped[index] = true;
+                _5thLinks.push_back(exactlyStore[index]);
+            }
+        }
+    }
+}
+//------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------
 //Exactly Operator
@@ -438,6 +592,8 @@ void ranking_PlusOperator(TrieNode *root, vector<string> word, vector<string> &_
 }
 //------------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------------
+//Print Function
 void print(vector<string> keyWords, vector<string> _5thFiles)
 {
     ifstream fin;
@@ -486,3 +642,4 @@ bool isHighLight(string word, vector<string> keyWord)
             return true;
     return false;
 }
+//------------------------------------------------------------------------------------------
