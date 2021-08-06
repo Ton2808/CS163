@@ -18,68 +18,40 @@ void activateMinusOperator(TrieNode *root, string inputString, int numberOfFiles
 }
 
 void rankingMinusOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles) {
-    vector<pair<string, int>> *tmp;
-    tmp = new vector<pair<string, int>>[word.size()];
-    // Get all the links in the trie
-    for (int i = 0; i < word.size(); ++i)
-        searchInTrieNode(root, word[i], tmp[i]);
+    vector<pair<string, int>> *tmpActive;
+    vector<pair<string, int>> *tmpMinus;
 
-    // assume that there just two word: A -B
-    vector<pair<string, int>>::iterator iteratorWord1 = tmp[1].begin();
-    vector<pair<string, int>>::iterator iteratorWord2 = tmp[2].begin();
-    // remove link have B
-    for (int i = 0; i < tmp[1].size(); ++i) {
-        for (int j = 0; j < tmp[2].size(); ++j) {
-            if (tmp[1][i].first == tmp[2][j].first) {
-                tmp[1].erase(iteratorWord1 + i);
-                tmp[2].erase(iteratorWord2 + j);
-            }
-        }
-    }
+    int numActive = 1;
+    int numMinus = word.size()-1;
+
+    tmpActive = new vector<pair<string, int>>[numActive];
+    tmpMinus = new vector<pair<string, int>>[numMinus];
+    
+    // Get all the links in the trie
+    for (int i = 0; i < numActive; ++i)
+        searchInTrieNode(root, word[i], tmpActive[i]);
+    for (int i = 0; i < numMinus; ++i)
+        searchInTrieNode(root, word[i], tmpMinus[i]);
 
     map<string, int> checkAllWordIsInFile;
     map<string, int> fwd;
-    for (int j = 0; j < tmp[1].size(); ++j) {
-        if (fwd[tmp[1][j].first] < tmp[1][j].second) {
-            fwd[tmp[1][j].first] = tmp[1][j].second;
+
+    for (int i = 0; i < numMinus; ++i) 
+        for (int j = 0; j < tmpMinus[i].size(); ++j) {
+            checkAllWordIsInFile[tmpMinus[i][j].first]--;
         }
-        ++ checkAllWordIsInFile[tmp[1][j].first]; // cout how many file for 1 word
-    }
 
     vector<string> store;
-    for (map<string, int>::iterator i = checkAllWordIsInFile.begin(); i != checkAllWordIsInFile.end(); ++i)
-        // if (i->second == word.size())
-        store.push_back(i->first);
-
-    int fwD = store.size();
-
-    if (fwD) {
-        map<string, float> w;
-        for (int i = 0; i < store.size(); ++i)
-            w[store[i]] = fwd[store[i]] * log((float)numberOfFiles / fwD);
-
-        bool *isLooped = new bool[store.size()];
-        for (int i = 0; i < store.size(); ++i)
-            isLooped[i] = false;
-        // find 5th max 
-        for (int i = 0; i < 5; ++i) {
-            int max = -1, index = -1;
-            for (int j = 0; j < store.size(); ++j)
-                if (!isLooped[j])
-                    if (w[store[j]] > max) {
-                        index = j;
-                        max = w[store[j]];
-                    }
-            if (index != -1) {
-                isLooped[index] = true;
-                _5thLinks.push_back(store[index]);
+    for (int i = 0; i < numActive; ++i) {
+        for (int j = 0; j < tmpActive[i].size(); ++j) {
+            if (checkAllWordIsInFile[tmpActive[i][j].first] == 0) {
+                store.push_back(tmpActive[i][j].first);
+                fwd[tmpActive[i][j].first] = tmpActive[i][j].second;
             }
         }
     }
-}
-/// for reuse code
-vector<string> find_5thLinks () {
 
+    _5thLinks = find_5thLinks(fwd, store, numberOfFiles);
 }
 
 //----------------------------------------------------------------
@@ -99,64 +71,23 @@ void activateHashtagsOperator(TrieNode *root, string inputString, int numberOfFi
 }
 
 void rankingHashtagsOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles) {
-    vector<pair<string, int>> *tmp;
-    tmp = new vector<pair<string, int>>[word.size()];
+    // Assume that the input string: "#hashtags #ahldklsf #jksndkgal ..."
+    vector<pair<string, int>> tmp;
     // Get all the links in the trie
-    for (int i = 0; i < word.size(); ++i)
-        searchInTrieNode(root, word[i], tmp[i]);
-
-    // // assume that there just two word: A -B
-    // vector<pair<string, int>>::iterator iteratorWord1 = tmp[1].begin();
-    // vector<pair<string, int>>::iterator iteratorWord2 = tmp[2].begin();
-    // // remove link have B
-    // for (int i = 0; i < tmp[1].size(); ++i) {
-    //     for (int j = 0; j < tmp[2].size(); ++j) {
-    //         if (tmp[1][i].first == tmp[2][j].first) {
-    //             tmp[1].erase(iteratorWord1 + i);
-    //             tmp[2].erase(iteratorWord2 + j);
-    //         }
-    //     }
-    // }
+    searchInTrieNode(root, word[0], tmp);
 
     map<string, int> checkAllWordIsInFile;
     map<string, int> fwd;
-    for (int j = 0; j < tmp[1].size(); ++j) {
-        if (fwd[tmp[1][j].first] < tmp[1][j].second) {
-            fwd[tmp[1][j].first] = tmp[1][j].second;
-        }
-        ++ checkAllWordIsInFile[tmp[1][j].first]; // cout how many file for 1 word
+    for (int j = 0; j < tmp.size(); ++j) {
+        fwd[tmp[j].first] = tmp[j].second;
+        ++ checkAllWordIsInFile[tmp[j].first]; // cout how many file for 1 word
     }
 
     vector<string> store;
     for (map<string, int>::iterator i = checkAllWordIsInFile.begin(); i != checkAllWordIsInFile.end(); ++i)
-        // if (i->second == word.size())
         store.push_back(i->first);
 
-    int fwD = store.size();
-
-    if (fwD) {
-        map<string, float> w;
-        for (int i = 0; i < store.size(); ++i)
-            w[store[i]] = fwd[store[i]] * log((float)numberOfFiles / fwD);
-
-        bool *isLooped = new bool[store.size()];
-        for (int i = 0; i < store.size(); ++i)
-            isLooped[i] = false;
-        // find 5th max 
-        for (int i = 0; i < 5; ++i) {
-            int max = -1, index = -1;
-            for (int j = 0; j < store.size(); ++j)
-                if (!isLooped[j])
-                    if (w[store[j]] > max) {
-                        index = j;
-                        max = w[store[j]];
-                    }
-            if (index != -1) {
-                isLooped[index] = true;
-                _5thLinks.push_back(store[index]);
-            }
-        }
-    }
+    _5thLinks = find_5thLinks(fwd, store, numberOfFiles);
 }
 
 // Task 11
@@ -197,4 +128,40 @@ vector<string> splitOperator(string inputString, char oper) {
         }
     }
     return res;
+}
+
+/* 
+Note:
+    - fwd: 
+    - store: 
+    - numberOfFiles: the total files we have 
+*/
+vector<string> find_5thLinks (map<string, int> fwd, vector<string> store, int numberOfFiles) {
+    int fwD = store.size();
+    vector<string> _5thLinks;
+
+    if (fwD) {
+        map<string, float> w;
+        for (int i = 0; i < store.size(); ++i)
+            w[store[i]] = fwd[store[i]] * log((float)numberOfFiles / fwD);
+
+        bool *isLooped = new bool[store.size()];
+        for (int i = 0; i < store.size(); ++i)
+            isLooped[i] = false;
+        // find 5th max 
+        for (int i = 0; i < 5; ++i) {
+            int max = -1, index = -1;
+            for (int j = 0; j < store.size(); ++j)
+                if (!isLooped[j])
+                    if (w[store[j]] > max) {
+                        index = j;
+                        max = w[store[j]];
+                    }
+            if (index != -1) {
+                isLooped[index] = true;
+                _5thLinks.push_back(store[index]);
+            }
+        }
+    }
+    return _5thLinks;
 }
