@@ -54,7 +54,6 @@ bool searchInTrieNode(TrieNode *root, string a, vector<pair<string, int> > &getL
     return true;
 }
 
-//get file names of all data
 void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numberFiles)
 {
     fin.open(dataFileName);
@@ -102,7 +101,6 @@ bool isStopWord(string stopWords[], string word, int number)
     return false;
 }
 
-//haven't finished
 void reConstructInput(string &word)
 {
     regex checkCapital("[A-Z]");
@@ -121,14 +119,11 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             fin.ignore();
             getline(fin, tmp);
             string word;
-
-            //skip the empty space
             regex checkLine("\\s*");
-
             if (regex_match(tmp, checkLine))
                 break;
             istringstream in(tmp);
-            while (getline(in, word, ' '))
+            while (in >> word)
             {
                 regex checkWord("[A-Z]*[a-z]*[0-9]*");
                 if (!regex_match(word, checkWord))
@@ -170,6 +165,15 @@ bool checkPlusOpertor(string inputString)
     return false;
 }
 
+bool checkExactlyOperator(string inputString)
+{
+    regex exactlyOperator("\"(.*)\"");
+    if (regex_match(inputString, exactlyOperator))
+    {
+        return true;
+    }
+    return false;
+}
 vector<string> splitPlusOperator(TrieNode *root, string inputString)
 {
     vector<string> res;
@@ -221,8 +225,22 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
     {
         activatePlusOperator(root, inputString, numberOfFiles);
     }
+
+    if (checkExactlyOperator(inputString))
+    {
+        acitvateExactlyOperator(root, inputString, numberOfFiles);
+    }
 }
 
+void acitvateExactlyOperator(TrieNode *root, string inputString, int numberOFiles)
+{
+    inputString = inputString.substr(1, inputString.size() - 1);
+    inputString = inputString.substr(0, inputString.size() - 1);
+    cout << inputString;
+}
+
+//------------------------------------------------------------------------------------------
+//Plus Operator
 void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles)
 {
     vector<string> listWords = splitPlusOperator(root, inputString);
@@ -239,15 +257,7 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
     {
         searchInTrieNode(root, word[i], tmp[i]);
     }
-    // for (int i = 0; i < word.size(); ++i)
-    // {
-    //     cout << word[i] << '\n';
-    //     for (int j = 0; j < tmp[i].size(); ++j)
-    //     {
-    //         cout << tmp[i][j].first << " " << tmp[i][j].second << '\n';
-    //     }
-    //     cout << '\n';
-    // }
+
     map<string, int> checkAllWordIsInFile;
     map<string, int> fwd;
     for (int i = 0; i < word.size(); ++i)
@@ -267,20 +277,15 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
         if (i->second == word.size())
         {
             store.push_back(i->first);
-            //cout << i->first << fwd[i->first] << '\n';
         }
     }
-
-    //tf-idf 
     int fwD = store.size();
-    //cout << fwD;
     if (fwD)
     {
         map<string, float> w;
         for (int i = 0; i < store.size(); ++i)
         {
             w[store[i]] = fwd[store[i]] * log((float)numberOfFiles / fwD);
-            //cout << store[i] << " " << w[store[i]] << '\n';
         }
         bool *isLooped = new bool[store.size()];
         for (int i = 0; i < store.size(); ++i)
@@ -308,6 +313,7 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
         }
     }
 }
+//-------------------------------------------------------------------------------------------------
 
 void print(vector<string> keyWords, vector<string> _5thFiles)
 {
@@ -329,11 +335,31 @@ void printOneFile(string fileName, ifstream &fin, vector<string> keyWords)
         while (!fin.eof())
         {
             getline(fin, a);
-            cout << a << '\n';
+            stringstream ss(a);
+            string tmp;
+            while (ss >> tmp)
+            {
+                if (isHighLight(tmp, keyWords))
+                {
+                    cout << "\033[32m" << tmp << "\033[m"
+                         << " ";
+                }
+                else
+                    cout << tmp << " ";
+            }
+            cout << '\n';
         }
         cout << '\n';
         cout << "------------------------------------------------------------------------------------------" << '\n';
         cout << '\n';
     }
     fin.close();
+}
+
+bool isHighLight(string word, vector<string> keyWord)
+{
+    for (int i = 0; i < keyWord.size(); ++i)
+        if (word == keyWord[i])
+            return true;
+    return false;
 }
