@@ -34,14 +34,16 @@ bool checkPlusOpertor(string inputString);
 bool checkExactlyOperator(string inputString);
 
 //operator plus
-vector<string> splitPlusOperator(TrieNode *root, string inputString);
+vector<string> splitPlusOperator(string inputString);
 void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles);
 
 //operator exacly
+vector<string> splitWordInSpace(string inputString);
 void acitvateExactlyOperator(TrieNode *root, string inputString, int numberOFiles);
+void ranking_ExactlyOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles);
 
 //ranking
-void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles);
+void ranking_PlusOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles);
 
 //print
 void print(vector<string> keyWords, vector<string> _5thFiles);

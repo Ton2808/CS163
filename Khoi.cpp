@@ -103,9 +103,17 @@ bool isStopWord(string stopWords[], string word, int number)
 
 void reConstructInput(string &word)
 {
-    regex checkCapital("[A-Z]");
-    if (regex_match(word.substr(0, 1), checkCapital))
-        word[0] += 32;
+    regex checkCapital("(.*)[A-Z](.*)");
+    if (regex_match(word, checkCapital))
+    {
+        for (int i = 0; i < word.size(); ++i)
+        {
+            if (word[i] <= 90 && word[i] >= 65)
+            {
+                word[i] += 32;
+            }
+        }
+    }
 }
 
 void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stopWords[])
@@ -116,7 +124,6 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
         string tmp;
         while (!fin.eof())
         {
-            fin.ignore();
             getline(fin, tmp);
             string word;
             regex checkLine("\\s*");
@@ -127,7 +134,7 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             {
                 regex checkWord("[A-Z]*[a-z]*[0-9]*");
                 if (!regex_match(word, checkWord))
-                    break;
+                    continue;
                 reConstructInput(word);
                 {
                     insertWordToTrie(root, word, fileName);
@@ -159,7 +166,7 @@ bool checkOROperator(string inputString)
 
 bool checkPlusOpertor(string inputString)
 {
-    regex operator_Plus("[a-z]*[A-Z]*[0-9]*(\\s*)(\\+)(\\s*)[a-z]*[A-Z]*[0-9]*");
+    regex operator_Plus("(.*)(\\+)(.*)");
     if (regex_match(inputString, operator_Plus))
         return true;
     return false;
@@ -173,30 +180,6 @@ bool checkExactlyOperator(string inputString)
         return true;
     }
     return false;
-}
-vector<string> splitPlusOperator(TrieNode *root, string inputString)
-{
-    vector<string> res;
-    string temp;
-    for (int i = 0; i < inputString.length(); ++i)
-    {
-        if (inputString[i] == ' ')
-            continue;
-        if (inputString[i] == '+')
-        {
-            res.push_back(temp);
-            temp.clear();
-        }
-        else
-        {
-            temp += inputString[i];
-            if (i == inputString.length() - 1)
-            {
-                res.push_back(temp);
-            }
-        }
-    }
-    return res;
 }
 
 void checkOption(TrieNode *root, string inputString, int numberOfFiles)
@@ -232,24 +215,164 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
     }
 }
 
+//------------------------------------------------------------------------------------------
+//Exactly Operator
+
+vector<string> splitWordInSpace(string inputString)
+{
+    vector<string> res;
+    stringstream ss(inputString);
+    string tmp;
+    while (ss >> tmp)
+    {
+        res.push_back(tmp);
+    }
+    return res;
+}
+
 void acitvateExactlyOperator(TrieNode *root, string inputString, int numberOFiles)
 {
     inputString = inputString.substr(1, inputString.size() - 1);
     inputString = inputString.substr(0, inputString.size() - 1);
-    cout << inputString;
+    vector<string> keyWords = splitWordInSpace(inputString);
+    vector<string> _5thLinks;
+    ranking_ExactlyOperator(root, keyWords, _5thLinks, numberOFiles);
+    print(keyWords, _5thLinks);
 }
+
+void ranking_ExactlyOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles)
+{
+    vector<pair<string, int> > *tmp;
+    tmp = new vector<pair<string, int> >[word.size()];
+    for (int i = 0; i < word.size(); ++i)
+    {
+        searchInTrieNode(root, word[i], tmp[i]);
+    }
+
+    map<string, int> checkAllWordIsInFile;
+    map<string, int> fwd;
+    for (int i = 0; i < word.size(); ++i)
+    {
+        for (int j = 0; j < tmp[i].size(); ++j)
+        {
+            if (fwd[tmp[i][j].first] < tmp[i][j].second)
+            {
+                fwd[tmp[i][j].first] = tmp[i][j].second;
+            }
+            checkAllWordIsInFile[tmp[i][j].first]++;
+        }
+    }
+    vector<string> store;
+    for (map<string, int>::iterator i = checkAllWordIsInFile.begin(); i != checkAllWordIsInFile.end(); ++i)
+    {
+        if (i->second == word.size())
+        {
+            store.push_back(i->first);
+        }
+    }
+
+    ifstream fin;
+    vector<string> exactlyStore;
+    for (int i = 0; i < store.size(); ++i)
+    {
+        fin.open(store[i]);
+        if (fin.is_open())
+        {
+            string a = "(.*)";
+            for (int i = 0; i < word.size(); ++i)
+            {
+                if (i != word.size() - 1)
+                    a = a + word[i] + "(\\s+)";
+                else
+                    a += word[i];
+            }
+            a += "(.*)";
+            regex matchString(a);
+            while (!fin.eof())
+            {
+                string tmp;
+                getline(fin, tmp);
+                if (regex_match(tmp.substr(0, tmp.size() - 1), matchString))
+                {
+                    exactlyStore.push_back(store[i]);
+                    break;
+                }
+            }
+        }
+        fin.close();
+    }
+    int fwD = exactlyStore.size();
+    if (fwD)
+    {
+        map<string, float> w;
+        for (int i = 0; i < exactlyStore.size(); ++i)
+        {
+            w[exactlyStore[i]] = fwd[exactlyStore[i]] * log((float)numberOfFiles / fwD);
+        }
+        bool *isLooped = new bool[exactlyStore.size()];
+        for (int i = 0; i < exactlyStore.size(); ++i)
+            isLooped[i] = false;
+        for (int i = 0; i < 5; ++i)
+        {
+            int max = -1;
+            int index = -1;
+            for (int j = 0; j < exactlyStore.size(); ++j)
+            {
+                if (!isLooped[j])
+                {
+                    if (w[exactlyStore[j]] > max)
+                    {
+                        index = j;
+                        max = w[exactlyStore[j]];
+                    }
+                }
+            }
+            if (index != -1)
+            {
+                isLooped[index] = true;
+                _5thLinks.push_back(exactlyStore[index]);
+            }
+        }
+    }
+}
+//------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------
 //Plus Operator
+vector<string> splitPlusOperator(string inputString)
+{
+    vector<string> res;
+    string temp;
+    for (int i = 0; i < inputString.length(); ++i)
+    {
+        if (inputString[i] == ' ')
+            continue;
+        if (inputString[i] == '+')
+        {
+            res.push_back(temp);
+            temp.clear();
+        }
+        else
+        {
+            temp += inputString[i];
+            if (i == inputString.length() - 1)
+            {
+                res.push_back(temp);
+            }
+        }
+    }
+    return res;
+}
+
 void activatePlusOperator(TrieNode *root, string inputString, int numberOfFiles)
 {
-    vector<string> listWords = splitPlusOperator(root, inputString);
+    vector<string> listWords = splitPlusOperator(inputString);
     vector<string> _5thLinks;
-    ranking(root, listWords, _5thLinks, numberOfFiles);
+    ranking_PlusOperator(root, listWords, _5thLinks, numberOfFiles);
     print(listWords, _5thLinks);
 }
 
-void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles)
+void ranking_PlusOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles)
 {
     vector<pair<string, int> > *tmp;
     tmp = new vector<pair<string, int> >[word.size()];
@@ -313,7 +436,7 @@ void ranking(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int
         }
     }
 }
-//-------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
 
 void print(vector<string> keyWords, vector<string> _5thFiles)
 {
