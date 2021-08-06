@@ -37,19 +37,17 @@ void rankingMinusOperator(TrieNode *root, vector<string> word, vector<string> &_
     map<string, int> fwd;
 
     for (int i = 0; i < numMinus; ++i) 
-        for (int j = 0; j < tmpMinus[i].size(); ++j) {
+        for (int j = 0; j < tmpMinus[i].size(); ++j)
             checkAllWordIsInFile[tmpMinus[i][j].first]--;
-        }
 
     vector<string> store;
-    for (int i = 0; i < numActive; ++i) {
-        for (int j = 0; j < tmpActive[i].size(); ++j) {
-            if (checkAllWordIsInFile[tmpActive[i][j].first] == 0) {
-                store.push_back(tmpActive[i][j].first);
-                fwd[tmpActive[i][j].first] = tmpActive[i][j].second;
-            }
-        }
-    }
+    for (int i = 0; i < numActive; ++i) 
+        for (int j = 0; j < tmpActive[i].size(); ++j) 
+            if (checkAllWordIsInFile[tmpActive[i][j].first] == 0) 
+                fwd[tmpActive[i][j].first] += tmpActive[i][j].second;
+
+    for (map<string, int>::iterator i = fwd.begin(); i != fwd.end(); ++i)
+        store.push_back(i->first);
 
     _5thLinks = find_5thLinks(fwd, store, numberOfFiles);
 }
@@ -72,19 +70,21 @@ void activateHashtagsOperator(TrieNode *root, string inputString, int numberOfFi
 
 void rankingHashtagsOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles) {
     // Assume that the input string: "#hashtags #ahldklsf #jksndkgal ..."
-    vector<pair<string, int>> tmp;
+    vector<pair<string, int>> *tmp;
+    tmp = new vector<pair<string, int>> [word.size()];    
     // Get all the links in the trie
-    searchInTrieNode(root, word[0], tmp);
+    for (int i = 0; i < word.size(); ++i) 
+        searchInTrieNode(root, "#" + word[i], tmp[i]);
 
     map<string, int> checkAllWordIsInFile;
     map<string, int> fwd;
-    for (int j = 0; j < tmp.size(); ++j) {
-        fwd[tmp[j].first] = tmp[j].second;
-        ++ checkAllWordIsInFile[tmp[j].first]; // cout how many file for 1 word
-    }
+
+    for (int i = 0; i < word.size(); ++i) 
+        for (int j = 0; j < tmp[i].size(); ++j) 
+            fwd[tmp[i][j].first] += tmp[i][j].second;
 
     vector<string> store;
-    for (map<string, int>::iterator i = checkAllWordIsInFile.begin(); i != checkAllWordIsInFile.end(); ++i)
+    for (map<string, int>::iterator i = fwd.begin(); i != fwd.end(); ++i)
         store.push_back(i->first);
 
     _5thLinks = find_5thLinks(fwd, store, numberOfFiles);
