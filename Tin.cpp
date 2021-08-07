@@ -91,6 +91,10 @@ void rankingHashtagsOperator(TrieNode *root, vector<string> word, vector<string>
 }
 
 // Task 11
+/* 
+Assume that the input String: "something $123..$345"
+    call input string like that: "A B..C"
+*/
 bool checkRangeOperator (string inputString) {
     regex operator_Range("(.*)(..)(.*)");
     if (regex_match(inputString, operator_Range))
@@ -100,12 +104,49 @@ bool checkRangeOperator (string inputString) {
 
 void activateRangeOperator(TrieNode *root, string inputString, int numberOfFiles) {
     vector<string> listWords = splitOperator(inputString, '..');
+    string lastPrice = listWords.back();
+    listWords = splitOperator(listWords.front(), ' ');
+    listWords.push_back(lastPrice);
     vector<string> _5thLinks;
     rankingRangeOperator(root, listWords, _5thLinks, numberOfFiles);
     print(listWords, _5thLinks);
-}
+} // List Words = [A, B, C]
 
 void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles) {
+    int pricePos = word.size() - 2;
+    int minPrice = stoi(word[pricePos]);
+    int maxPrice = stoi(word[pricePos + 1]);
+    int num = pricePos + maxPrice - minPrice;
+    
+    vector<pair<string, int>> *tmp;
+    tmp = new vector<pair<string, int>> [num];
+
+    // Get all the links in the trie
+    for (int i = 0; i < num; ++i) 
+        searchInTrieNode(root, word[i], tmp[i]);
+
+    map<string, int> checkTrueFinding;
+    map<string, int> fwd;
+
+    for (int i = 0; i < pricePos; ++i) 
+        for (int j = 0; j < tmp[i].size(); ++j) {        
+            fwd[tmp[i][j].first] += tmp[i][j].second;
+            checkTrueFinding[tmp[i][j].first] += 1; 
+        }
+
+    for (int i = pricePos; i < tmp.size(); ++i)
+        for (int j = 0; j < tmp[i].size(); ++j) 
+            if (checkTrueFinding[tmp[i][j].first] == pricePos) {
+                checkTrueFinding[tmp[i][j].first] = -1; // correct link
+                fwd[tmp[i][j].first] += tmp[i][j].second;
+            } 
+
+    vector<string> store;
+    for (auto it = checkTrueFinding.begin(); it != checkTrueFinding.end(); ++i)
+        if (it->second == -1)
+            store.push_back(it->first);
+
+    _5thLinks = find_5thLinks(fwd, store, numberOfFiles);
 }
 
 //----------------------------------
