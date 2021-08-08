@@ -308,7 +308,7 @@ void ranking_WildCardOperator(TrieNode *root, vector<string> word, vector<string
             {
                 if (j < starsPos.size() && index == starsPos[j])
                 {
-                    i++;
+                    j++;
                     a += "(.*)";
                 }
                 if (i != word.size() - 1)
