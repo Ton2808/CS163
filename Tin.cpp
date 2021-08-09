@@ -18,14 +18,14 @@ void activateMinusOperator(TrieNode *root, string inputString, int numberOfFiles
 }
 
 void rankingMinusOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles) {
-    vector<pair<string, int>> *tmpActive;
-    vector<pair<string, int>> *tmpMinus;
+    vector<pair<string, int> > *tmpActive;
+    vector<pair<string, int> > *tmpMinus;
 
     int numActive = 1;
     int numMinus = word.size()-1;
 
-    tmpActive = new vector<pair<string, int>>[numActive];
-    tmpMinus = new vector<pair<string, int>>[numMinus];
+    tmpActive = new vector<pair<string, int> >[numActive];
+    tmpMinus = new vector<pair<string, int> >[numMinus];
     
     // Get all the links in the trie
     for (int i = 0; i < numActive; ++i)
@@ -70,8 +70,8 @@ void activateHashtagsOperator(TrieNode *root, string inputString, int numberOfFi
 
 void rankingHashtagsOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles) {
     // Assume that the input string: "#hashtags #ahldklsf #jksndkgal ..."
-    vector<pair<string, int>> *tmp;
-    tmp = new vector<pair<string, int>> [word.size()];    
+    vector<pair<string, int> > *tmp;
+    tmp = new vector<pair<string, int> > [word.size()];    
     // Get all the links in the trie
     for (int i = 0; i < word.size(); ++i) 
         searchInTrieNode(root, "#" + word[i], tmp[i]);
@@ -102,8 +102,27 @@ bool checkRangeOperator (string inputString) {
     return false;
 }
 
+vector<string> splitDoubleDotOperator(string inputString) {
+    vector<string> res;
+    string temp;
+    for (int i = 0; i < inputString.length(); ++i) {
+        if (inputString[i] == ' ')
+            continue;
+        if (inputString[i] == '.' && inputString[i+1] == '.') {
+            ++i;
+            res.push_back(temp);
+            temp.clear();
+        } else {
+            temp += inputString[i];
+            if (i == inputString.length() - 1)
+                res.push_back(temp);
+        }
+    }
+    return res;
+}
+
 void activateRangeOperator(TrieNode *root, string inputString, int numberOfFiles) {
-    vector<string> listWords = splitOperator(inputString, '..');
+    vector<string> listWords = splitDoubleDotOperator(inputString);
     string lastPrice = listWords.back();
     listWords = splitOperator(listWords.front(), ' ');
     listWords.push_back(lastPrice);
@@ -118,8 +137,8 @@ void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_
     int maxPrice = stoi(word[pricePos + 1]);
     int num = pricePos + maxPrice - minPrice;
     
-    vector<pair<string, int>> *tmp;
-    tmp = new vector<pair<string, int>> [num];
+    vector<pair<string, int> > *tmp;
+    tmp = new vector<pair<string, int> > [num];
 
     // Get all the links in the trie
     for (int i = 0; i < num; ++i) 
@@ -134,7 +153,7 @@ void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_
             checkTrueFinding[tmp[i][j].first] += 1; 
         }
 
-    for (int i = pricePos; i < tmp.size(); ++i)
+    for (int i = pricePos; i < num; ++i)
         for (int j = 0; j < tmp[i].size(); ++j) 
             if (checkTrueFinding[tmp[i][j].first] == pricePos) {
                 checkTrueFinding[tmp[i][j].first] = -1; // correct link
@@ -142,7 +161,7 @@ void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_
             } 
 
     vector<string> store;
-    for (auto it = checkTrueFinding.begin(); it != checkTrueFinding.end(); ++i)
+    for (auto it = checkTrueFinding.begin(); it != checkTrueFinding.end(); ++it)
         if (it->second == -1)
             store.push_back(it->first);
 
