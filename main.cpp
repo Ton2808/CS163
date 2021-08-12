@@ -19,7 +19,6 @@ int main()
     cout << "ok" << '\n';
     setUpData("Search_Engine_Data/___index.txt", fin, fileNames, numberFiles);
 
-    
     getStringsStopWord("StopWord.txt", stopWords, fin);
 
     for (int i = 0; i < numberFiles; ++i)
@@ -38,12 +37,22 @@ int main()
     // cout << userInput << '\n';
     // checkOption(root, userInput, numberFiles);
 
+    vector<string> isSearched;
     while (true)
     {
         cout << "input string: ";
         string userInput;
         getline(cin, userInput);
         reConstructInput(userInput);
+
+        if (checkHistoryOption(userInput))
+        {
+            isSearched.push_back(userInput.substr(1, userInput.size() - 1));
+            activateHistory(isSearched, userInput);
+        }
+        else
+            isSearched.push_back(userInput);
+
         cout << userInput << '\n';
         checkOption(root, userInput, numberFiles);
         int isClose = -1;

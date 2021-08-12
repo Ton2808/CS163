@@ -58,4 +58,8 @@ bool isHighLight(string word, vector<string> keyWord);
 
 //search
 void checkOption(TrieNode *root, string inputString, int numberOfFiles);
+
+//history
+bool checkHistoryOption(string inputString);
+void activateHistory(vector<string> historyString, string &userInput);
 #endif

@@ -628,6 +628,36 @@ void ranking_PlusOperator(TrieNode *root, vector<string> word, vector<string> &_
 //------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------
+//history recommendation
+
+bool checkHistoryOption(string inputString)
+{
+    regex history("@(.*)");
+    if (regex_match(inputString, history))
+    {
+        return true;
+    }
+    return false;
+}
+void activateHistory(vector<string> historyString, string &userInput)
+{
+    for (int j = 0; j < historyString.size(); ++j)
+        cout << "case " << j << ": " << historyString[j] << '\n';
+
+    int i;
+    cout << "input case: ";
+    cin >> i;
+    if (i >= historyString.size())
+    {
+        cout << "No Option";
+    }
+    else
+    {
+        userInput = historyString[i];
+    }
+}
+//------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
 //Print Function
 void print(vector<string> keyWords, vector<string> _5thFiles)
 {
