@@ -1,5 +1,6 @@
 #include "Khoi.h"
 #include "Tan.h"
+#include "Tin.h"
 #include "library.h"
 using namespace std;
 //------------------------------------------------------------------------------------------
@@ -239,18 +240,24 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
     {
         activateAndOperator(root, inputString, numberOfFiles);
     }
-
     else if (checkOROperator(inputString))
     {
     }
-
     else if (checkPlusOpertor(inputString))
     {
         activatePlusOperator(root, inputString, numberOfFiles);
     }
+    else if (checkMinusOperator(inputString)) 
+    {
+        activateMinusOperator(root, inputString, numberOfFiles);
+    }
     else if (checkPrice(inputString))
     {
         activatePriceOperator(root, inputString, numberOfFiles);
+    }
+    else if (checkHashtagsOperator(inputString)) 
+    {
+        activateHashtagsOperator(root, inputString, numberOfFiles);
     }
     else if (checkExactlyOperator(inputString))
     {
@@ -258,6 +265,10 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
             acitvateWildCardOperator(root, inputString, numberOfFiles);
         else
             acitvateExactlyOperator(root, inputString, numberOfFiles);
+    }
+    else if (checkRangeOperator(inputString)) 
+    {
+        activateRangeOperator(root, inputString, numberOfFiles);
     }
     else
     {
