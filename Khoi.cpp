@@ -140,7 +140,7 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             {
                 if (word[word.size() - 1] == '.' || word[word.size() - 1] == ',')
                     word.pop_back();
-                if (word[0] != '$')
+                if (word[0] != '$' || word[0] != '#')
                 {
                     regex checkWord("[A-Z]*[a-z]*[0-9]*");
                     if (!regex_match(word, checkWord))
@@ -243,7 +243,7 @@ void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int nu
 
     else if (checkOROperator(inputString))
     {
-        activateOROperator(root,inputString,numberOfFiles);
+        activateOROperator(root, inputString, numberOfFiles);
     }
 
     else if (checkPlusOpertor(inputString))
@@ -261,12 +261,14 @@ void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int nu
         else
             acitvateExactlyOperator(root, inputString, numberOfFiles);
     }
-    else if (checkIntitleOperator(inputString)){
-        activateIntitleOperator(rootTitle,inputString,numberOfFiles);
+    else if (checkIntitleOperator(inputString))
+    {
+        activateIntitleOperator(rootTitle, inputString, numberOfFiles);
     }
-    else if (checkSynonymOperator(inputString)){
+    else if (checkSynonymOperator(inputString))
+    {
         ifstream fin;
-        activateSynonymOperator(root,inputString,numberOfFiles,fin);
+        activateSynonymOperator(root, inputString, numberOfFiles, fin);
     }
     else
     {
