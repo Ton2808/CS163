@@ -222,7 +222,7 @@ bool checkPrice(string inputString)
     return ok;
 }
 
-void checkOption(TrieNode *root, string inputString, int numberOfFiles)
+void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int numberOfFiles)
 {
     //1: And
     //2: Or
@@ -262,7 +262,7 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
             acitvateExactlyOperator(root, inputString, numberOfFiles);
     }
     else if (checkIntitleOperator(inputString)){
-        activateIntitleOperator(root,inputString,numberOfFiles);
+        activateIntitleOperator(rootTitle,inputString,numberOfFiles);
     }
     else if (checkSynonymOperator(inputString)){
         ifstream fin;
