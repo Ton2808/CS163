@@ -2,6 +2,7 @@
 #include "Tan.h"
 #include "library.h"
 #include "Duy.h"
+#include "Tin.h"
 using namespace std;
 //------------------------------------------------------------------------------------------
 //Set Up
@@ -250,10 +251,12 @@ void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int nu
     {
         activatePlusOperator(root, inputString, numberOfFiles);
     }
+
     else if (checkPrice(inputString))
     {
         activatePriceOperator(root, inputString, numberOfFiles);
     }
+
     else if (checkExactlyOperator(inputString))
     {
         if (checkWildCardOperator(inputString))
@@ -261,15 +264,33 @@ void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int nu
         else
             acitvateExactlyOperator(root, inputString, numberOfFiles);
     }
+
     else if (checkIntitleOperator(inputString))
     {
         activateIntitleOperator(rootTitle, inputString, numberOfFiles);
     }
+
     else if (checkSynonymOperator(inputString))
     {
         ifstream fin;
         activateSynonymOperator(root, inputString, numberOfFiles, fin);
     }
+
+    else if (checkMinusOperator(inputString)) 
+    {
+        activateMinusOperator(root, inputString, numberOfFiles);
+    } 
+
+    else if (checkHashtagsOperator(inputString))
+    {
+        activateHashtagsOperator(root, inputString, numberOfFiles);
+    }
+
+    else if (checkRangeOperator(inputString))
+    {
+        activateRangeOperator(root, inputString, numberOfFiles);
+    }
+
     else
     {
         activateNormalOperator(root, inputString, numberOfFiles);
