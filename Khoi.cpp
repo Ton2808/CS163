@@ -67,7 +67,7 @@ void setUpData(string dataFileName, ifstream &fin, string *&fileName, int &numbe
 
         fin.seekg(0, fin.beg);
         cout << numberFiles << endl;
-        exit(0);
+        //exit(0);
         fileName = new string[numberFiles];
         for (int i = 0; i < numberFiles; ++i)
         {
@@ -147,7 +147,6 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
                 }
                 reConstructInput(word);
                 {
-                    cout << word << endl;
                     if (!isStopWord(stopWords, word, 202))
                     {
                         insertWordToTrie(root, word, fileName);
@@ -354,7 +353,7 @@ void ranking_WildCardOperator(TrieNode *root, vector<string> word, vector<string
                 index++;
             }
             a += "(.*)";
-            cout << a << '\n';
+            //cout << a << '\n';
             regex matchString(a);
             while (!fin.eof())
             {

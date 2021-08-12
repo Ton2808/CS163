@@ -16,8 +16,10 @@ int main()
     string *stopWords;
     int numberFiles;
 
+    cout << "ok" << '\n';
     setUpData("Search_Engine_Data/___index.txt", fin, fileNames, numberFiles);
 
+    
     getStringsStopWord("StopWord.txt", stopWords, fin);
 
     for (int i = 0; i < numberFiles; ++i)
