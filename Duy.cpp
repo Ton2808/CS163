@@ -135,7 +135,7 @@ void getTitleToFile(string fileName, TrieNode *&root, ifstream &fin)
 
 bool checkIntitleOperator(string inputString)
 {
-    regex operator_INTITLE("(intitle:)(.*)");
+    regex operator_INTITLE("(intitle\\:)(.*)");
     if (regex_match(inputString.begin(), inputString.end(), operator_INTITLE))
         return true;
     return false;
@@ -173,7 +173,7 @@ void activateIntitleOperator(TrieNode *root, string inputString, int numberOfFil
 //Task 12: ~ Synonymn
 bool checkSynonymOperator(string inputString)
 {
-    regex operator_INTITLE("(~)(.*)");
+    regex operator_INTITLE("(\\~)(.*)");
     if (regex_match(inputString.begin(), inputString.end(), operator_INTITLE))
         return true;
     return false;

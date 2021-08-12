@@ -140,7 +140,7 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             {
                 if (word[word.size() - 1] == '.' || word[word.size() - 1] == ',')
                     word.pop_back();
-                if (word[0] != '$' || word[0] != '#')
+                if (word[0] != '$' && word[0] != '#')
                 {
                     regex checkWord("[A-Z]*[a-z]*[0-9]*");
                     if (!regex_match(word, checkWord))
