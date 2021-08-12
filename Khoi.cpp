@@ -106,7 +106,6 @@ bool isStopWord(string stopWords[], string word, int number)
     return false;
 }
 
-
 void reConstructInput(string &word)
 {
     regex checkCapital("(.*)[A-Z](.*)");
@@ -138,9 +137,9 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
             istringstream in(tmp);
             while (in >> word)
             {
-                if(word[word.size() - 1] == '.' || word[word.size() - 1] == ',')
+                if (word[word.size() - 1] == '.' || word[word.size() - 1] == ',')
                     word.pop_back();
-                if(word[0] != '$')
+                if (word[0] != '$')
                 {
                     regex checkWord("[A-Z]*[a-z]*[0-9]*");
                     if (!regex_match(word, checkWord))
@@ -149,10 +148,13 @@ void getFilesToTrie(string fileName, ifstream &fin, TrieNode *&root, string stop
                 reConstructInput(word);
                 {
                     cout << word << endl;
-                    insertWordToTrie(root, word, fileName);
-//                    cout << word << '\n';
-//                    cout << fileName << '\n';
-//                    cout << '\n';
+                    if (!isStopWord(stopWords, word, 202))
+                    {
+                        insertWordToTrie(root, word, fileName);
+                        cout << word << '\n';
+                        cout << fileName << '\n';
+                        cout << '\n';
+                    }
                 }
             }
         }
@@ -167,9 +169,9 @@ bool checkANDOperator(string inputString)
 {
     bool ok = false;
     int sz = inputString.size();
-    for(int i = 0 ; i < sz - 2 ; i++)
+    for (int i = 0; i < sz - 2; i++)
     {
-        if((i == 0 || inputString[i - 1] == ' ') && inputString[i] == 'a' && inputString[i + 1] == 'n' && inputString[i + 2] == 'd')
+        if ((i == 0 || inputString[i - 1] == ' ') && inputString[i] == 'a' && inputString[i + 1] == 'n' && inputString[i + 2] == 'd')
             ok = true;
     }
     return ok;
@@ -212,14 +214,13 @@ bool checkPrice(string inputString)
 {
     int sz = inputString.size();
     bool ok = false;
-    for(int i = 0 ; i < sz ; i++)
+    for (int i = 0; i < sz; i++)
     {
-        if(inputString[i] == '$')
+        if (inputString[i] == '$')
             ok = true;
     }
     return ok;
 }
-
 
 void checkOption(TrieNode *root, string inputString, int numberOfFiles)
 {
@@ -242,16 +243,15 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
 
     else if (checkOROperator(inputString))
     {
-
     }
 
     else if (checkPlusOpertor(inputString))
     {
         activatePlusOperator(root, inputString, numberOfFiles);
     }
-    else if(checkPrice(inputString))
+    else if (checkPrice(inputString))
     {
-        activatePriceOperator(root , inputString , numberOfFiles);
+        activatePriceOperator(root, inputString, numberOfFiles);
     }
     else if (checkExactlyOperator(inputString))
     {
@@ -262,7 +262,7 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
     }
     else
     {
-        activateNormalOperator(root , inputString , numberOfFiles);
+        activateNormalOperator(root, inputString, numberOfFiles);
     }
 }
 //------------------------------------------------------------------------------------------
@@ -673,12 +673,12 @@ void printOneFile(string fileName, ifstream &fin, vector<string> keyWords)
 
 bool isHighLight(string word, vector<string> keyWord)
 {
-    if(word[word.size() - 1] == '.' || word[word.size() - 1] == ',')
+    if (word[word.size() - 1] == '.' || word[word.size() - 1] == ',')
         word.pop_back();
     for (int i = 0; i < keyWord.size(); ++i)
     {
         string new_string;
-        for(int s = 0 ; s < word.size() ; s++)
+        for (int s = 0; s < word.size(); s++)
             new_string.push_back(tolower(word[s]));
         if (new_string == keyWord[i])
             return true;
