@@ -57,7 +57,7 @@ void printOneFile(string fileName, ifstream &fin, vector<string> keyWords);
 bool isHighLight(string word, vector<string> keyWord);
 
 //search
-void checkOption(TrieNode *root, string inputString, int numberOfFiles);
+void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int numberOfFiles);
 
 //history
 bool checkHistoryOption(string inputString);

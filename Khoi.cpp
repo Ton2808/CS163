@@ -1,6 +1,7 @@
 #include "Khoi.h"
 #include "Tan.h"
 #include "library.h"
+#include "Duy.h"
 using namespace std;
 //------------------------------------------------------------------------------------------
 //Set Up
@@ -221,7 +222,7 @@ bool checkPrice(string inputString)
     return ok;
 }
 
-void checkOption(TrieNode *root, string inputString, int numberOfFiles)
+void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int numberOfFiles)
 {
     //1: And
     //2: Or
@@ -242,6 +243,7 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
 
     else if (checkOROperator(inputString))
     {
+        activateOROperator(root,inputString,numberOfFiles);
     }
 
     else if (checkPlusOpertor(inputString))
@@ -258,6 +260,13 @@ void checkOption(TrieNode *root, string inputString, int numberOfFiles)
             acitvateWildCardOperator(root, inputString, numberOfFiles);
         else
             acitvateExactlyOperator(root, inputString, numberOfFiles);
+    }
+    else if (checkIntitleOperator(inputString)){
+        activateIntitleOperator(rootTitle,inputString,numberOfFiles);
+    }
+    else if (checkSynonymOperator(inputString)){
+        ifstream fin;
+        activateSynonymOperator(root,inputString,numberOfFiles,fin);
     }
     else
     {
