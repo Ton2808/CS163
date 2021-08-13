@@ -64,7 +64,7 @@ void ranking_OROperator(TrieNode *root, vector<string> word, vector<string> &_5t
             //if link has both a and b then we sum their w.
             w[tmp[i][j].first] += tmp[i][j].second * log((float)numberOfFiles / tmp[i].size());
             store.insert(tmp[i][j].first);
-            cout << tmp[i][j].first << endl;
+            //cout << tmp[i][j].first << endl;
         }
     }
     //Take 5th largest in w
@@ -121,9 +121,9 @@ void getTitleToFile(string fileName, TrieNode *&root, ifstream &fin)
                 reConstructInput(word);
                 {
                     insertWordToTrie(root, word, link);
-                    cout << word << '\n';
-                    cout << link << '\n';
-                    cout << '\n';
+                    // cout << word << '\n';
+                    // cout << link << '\n';
+                    // cout << '\n';
                 }
             }
         }

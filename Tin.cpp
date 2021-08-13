@@ -5,7 +5,7 @@
 
 bool checkMinusOperator(string inputString)
 {
-    regex operator_Minus("(.*)( -)(.*)");
+    regex operator_Minus("(.*)(\\s\\-)(.*)");
     if (regex_match(inputString, operator_Minus))
         return true;
     return false;
@@ -67,7 +67,7 @@ bool checkHashtagsOperator(string inputString)
 
 void activateHashtagsOperator(TrieNode *root, string inputString, int numberOfFiles)
 {
-    vector<string> listWords = splitOperator(inputString, '#');
+    vector<string> listWords = splitOperator(inputString, '!');
     vector<string> _5thLinks;
     rankingHashtagsOperator(root, listWords, _5thLinks, numberOfFiles);
     print(listWords, _5thLinks);
@@ -80,7 +80,7 @@ void rankingHashtagsOperator(TrieNode *root, vector<string> word, vector<string>
     tmp = new vector<pair<string, int> >[word.size()];
     // Get all the links in the trie
     for (int i = 0; i < word.size(); ++i)
-        searchInTrieNode(root, "#" + word[i], tmp[i]);
+        searchInTrieNode(root, word[i], tmp[i]);
 
     map<string, int> checkAllWordIsInFile;
     map<string, int> fwd;
@@ -103,7 +103,7 @@ Assume that the input String: "something $123..$345"
 */
 bool checkRangeOperator(string inputString)
 {
-    regex operator_Range("(.*)(..)(.*)");
+    regex operator_Range("(.*)(\\..)(.*)");
     if (regex_match(inputString, operator_Range))
         return true;
     return false;
