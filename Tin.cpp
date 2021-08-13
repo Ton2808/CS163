@@ -33,7 +33,7 @@ void rankingMinusOperator(TrieNode *root, vector<string> word, vector<string> &_
     // Get all the links in the trie
     for (int i = 0; i < numActive; ++i)
         searchInTrieNode(root, word[i], tmpActive[i]);
-    for (int i = 0; i < numMinus; ++i)
+    for (int i = 1; i < numMinus; ++i)
         searchInTrieNode(root, word[i], tmpMinus[i]);
 
     map<string, int> checkAllWordIsInFile;
@@ -103,7 +103,7 @@ Assume that the input String: "something $123..$345"
 */
 bool checkRangeOperator(string inputString)
 {
-    regex operator_Range("(.*)(..)(.*)");
+    regex operator_Range("(.*)(\\..)(.*)");
     if (regex_match(inputString, operator_Range))
         return true;
     return false;
@@ -115,8 +115,11 @@ vector<string> splitDoubleDotOperator(string inputString)
     string temp;
     for (int i = 0; i < inputString.length(); ++i)
     {
-        if (inputString[i] == ' ')
-            continue;
+        if (inputString[i] == ' '){
+            res.push_back(temp);
+            temp.clear();
+        }
+            
         if (inputString[i] == '.' && inputString[i + 1] == '.')
         {
             ++i;
@@ -136,9 +139,7 @@ vector<string> splitDoubleDotOperator(string inputString)
 void activateRangeOperator(TrieNode *root, string inputString, int numberOfFiles)
 {
     vector<string> listWords = splitDoubleDotOperator(inputString);
-    string lastPrice = listWords.back();
-    listWords = splitOperator(listWords.front(), ' ');
-    listWords.push_back(lastPrice);
+  
     vector<string> _5thLinks;
     rankingRangeOperator(root, listWords, _5thLinks, numberOfFiles);
     print(listWords, _5thLinks);
@@ -151,12 +152,18 @@ void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_
     int maxPrice = stoi(word[pricePos + 1]);
     int num = pricePos + maxPrice - minPrice;
 
+    cout << "Price: " << num << endl;
+
     vector<pair<string, int> > *tmp;
     tmp = new vector<pair<string, int> >[num];
 
     // Get all the links in the trie
-    for (int i = 0; i < num; ++i)
+    for (int i = 0; i < pricePos; ++i)
         searchInTrieNode(root, word[i], tmp[i]);
+
+    for (int i = pricePos; i < num; ++i) {
+        searchInTrieNode(root, to_string(minPrice + i - pricePos), tmp[i]);
+    }
 
     map<string, int> checkTrueFinding;
     map<string, int> fwd;
