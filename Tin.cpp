@@ -115,11 +115,12 @@ vector<string> splitDoubleDotOperator(string inputString)
     string temp;
     for (int i = 0; i < inputString.length(); ++i)
     {
-        if (inputString[i] == ' '){
+        if (inputString[i] == ' ')
+        {
             res.push_back(temp);
             temp.clear();
         }
-            
+
         if (inputString[i] == '.' && inputString[i + 1] == '.')
         {
             ++i;
@@ -144,14 +145,12 @@ void activateRangeOperator(TrieNode *root, string inputString, int numberOfFiles
     print(listWords, _5thLinks);
 } // List Words = [A, B, C]
 
-void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_5thLinks, int numberOfFiles)
+void rankingRangeOperator(TrieNode *root, vector<string> &word, vector<string> &_5thLinks, int numberOfFiles)
 {
     int pricePos = word.size() - 2;
     int minPrice = stoi(word[pricePos]);
     int maxPrice = stoi(word[pricePos + 1]);
-    int num = pricePos + maxPrice - minPrice;
-
-    cout << "Price: " << num << endl;
+    int num = pricePos + maxPrice - minPrice + 1;
 
     vector<pair<string, int> > *tmp;
     tmp = new vector<pair<string, int> >[num];
@@ -160,8 +159,11 @@ void rankingRangeOperator(TrieNode *root, vector<string> word, vector<string> &_
     for (int i = 0; i < pricePos; ++i)
         searchInTrieNode(root, word[i], tmp[i]);
 
-    for (int i = pricePos; i < num; ++i) {
+    for (int i = pricePos; i < num; ++i)
+    {
+        word.push_back(to_string(minPrice + i - pricePos));
         searchInTrieNode(root, to_string(minPrice + i - pricePos), tmp[i]);
+        cout << minPrice + i - pricePos << '\n';
     }
 
     map<string, int> checkTrueFinding;
