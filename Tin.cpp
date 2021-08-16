@@ -163,7 +163,7 @@ void rankingRangeOperator(TrieNode *root, vector<string> &word, vector<string> &
     {
         word.push_back(to_string(minPrice + i - pricePos));
         searchInTrieNode(root, to_string(minPrice + i - pricePos), tmp[i]);
-        cout << minPrice + i - pricePos << '\n';
+        // cout << minPrice + i - pricePos << '\n';
     }
 
     map<string, int> checkTrueFinding;
