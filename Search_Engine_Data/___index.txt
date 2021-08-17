@@ -367,3 +367,4 @@ Data34.txt
 Data35.txt
 Data36.txt
 Data37.txt
+filetype.txt

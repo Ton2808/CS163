@@ -276,10 +276,10 @@ void checkOption(TrieNode *root, TrieNode *rootTitle, string inputString, int nu
         activateSynonymOperator(root, inputString, numberOfFiles, fin);
     }
 
-    else if (checkMinusOperator(inputString)) 
+    else if (checkMinusOperator(inputString))
     {
         activateMinusOperator(root, inputString, numberOfFiles);
-    } 
+    }
 
     else if (checkHashtagsOperator(inputString))
     {
